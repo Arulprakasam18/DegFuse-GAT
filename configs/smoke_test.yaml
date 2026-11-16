@@ -1,0 +1,8 @@
+# Smoke test: minimal run for verification
+data:
+  dataset: "Cora"
+training:
+  epochs: 2
+  seed: 42
+logging:
+  run_name: "smoke_test"

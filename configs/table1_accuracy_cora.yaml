@@ -1,0 +1,5 @@
+# Table 1: Accuracy comparison — Cora
+data:
+  dataset: "Cora"
+logging:
+  run_name: "table1_cora"

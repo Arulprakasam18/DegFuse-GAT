@@ -1,0 +1,7 @@
+# Table 1: Accuracy comparison — ogbn-arxiv
+data:
+  dataset: "ogbn-arxiv"
+training:
+  epochs: 200
+logging:
+  run_name: "table1_arxiv"

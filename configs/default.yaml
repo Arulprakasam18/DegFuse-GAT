@@ -1,0 +1,77 @@
+# ===========================================================================
+# DegFuse-GAT — Default Configuration
+# ===========================================================================
+
+# --- Data ---
+data:
+  dataset: "Cora"                 # Cora | CiteSeer | PubMed | ogbn-arxiv
+  root: "./data"                  # root directory for all datasets
+
+# --- Model ---
+model:
+  hidden_dim: 64
+  num_heads: 8
+  num_layers: 2
+  dropout: 0.6
+  dispatch_mode: "auto"           # auto | fused | pyg
+
+# --- Training ---
+training:
+  epochs: 200
+  lr: 0.005
+  weight_decay: 0.0005
+  seed: 42
+  seeds: [42, 123, 2024]          # multi-seed runs (Table 1)
+  optimizer: "adam"
+  gradient_clip: null
+
+# --- Evaluation ---
+evaluation:
+  checkpoint_path: null
+  metrics: ["accuracy"]
+
+# --- Hardware ---
+hardware:
+  device: "cuda"                  # cuda | cpu
+  precision: "fp32"               # fp32 | fp16 | bf16
+
+# --- Logging ---
+logging:
+  run_name: "default"
+  output_dir: "results/metrics"
+  log_interval: 10
+
+# --- Adaptive Dispatch Strategy ---
+# Triton kernel launch overhead ~200-220us dominates on tiny graphs.
+# Below edge_threshold: PyG fallback for latency.
+# Above edge_threshold: DegFuse wins on BOTH memory AND speed.
+adaptive:
+  enabled: true
+  edge_threshold: 100000          # edges below this -> PyG fallback
+  fallback: "pyg"                 # pyg | single_config
+
+# --- Kernel Configuration ---
+kernel:
+  # Large graphs (E >= 100k): 3 buckets
+  degree_buckets_large:
+    - [64,        1,   64]        # leaf nodes
+    - [256,       2,  128]        # medium degree
+    - [99999999,  4,  256]        # hubs
+
+  # Medium graphs (50k <= E < 100k): 2 buckets
+  degree_buckets_medium:
+    - [128,       2,   64]
+    - [99999999,  4,  128]
+
+  # Single-config fallback (E < 50k)
+  single_config:
+    num_warps: 4
+    BLOCK_E: 64
+
+  default_num_warps: 4
+  default_block_e: 128
+
+# --- Benchmark ---
+benchmark:
+  warmup_iters: 20
+  bench_iters: 100

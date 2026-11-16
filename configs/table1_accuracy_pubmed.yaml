@@ -1,0 +1,5 @@
+# Table 1: Accuracy comparison — PubMed
+data:
+  dataset: "PubMed"
+logging:
+  run_name: "table1_pubmed"

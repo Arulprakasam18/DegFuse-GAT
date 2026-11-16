@@ -1,0 +1,5 @@
+# Table 1: Accuracy comparison — CiteSeer
+data:
+  dataset: "CiteSeer"
+logging:
+  run_name: "table1_citeseer"
